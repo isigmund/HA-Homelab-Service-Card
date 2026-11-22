@@ -6,12 +6,12 @@
  * No build step required: this file is loaded directly by Home Assistant.
  */
 
-const CARD_VERSION = "0.1.0";
+const CARD_VERSION = "0.1.1";
 const CARD_TYPE = "homelab-service-card";
 const EDITOR_TYPE = "homelab-service-card-editor";
 
 const DEFAULTS = {
-  icon_size: 48,
+  icon_size: 32,
   status_label: "Status",
   open_in_new_tab: true,
 };
@@ -77,13 +77,13 @@ const STYLES = `
   .divider {
     height: 1px;
     background: var(--divider-color, rgba(0, 0, 0, 0.12));
-    margin: 12px 0 8px;
+    margin: 6px 0 4px;
   }
   .rows {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(80px, auto);
     column-gap: 24px;
-    row-gap: 6px;
+    row-gap: 2px;
     align-items: center;
   }
   .row {

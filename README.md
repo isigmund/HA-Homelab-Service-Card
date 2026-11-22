@@ -48,7 +48,7 @@ type: custom:homelab-service-card
 name: Paperless Ngx
 url: https://paperless.example.com
 icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/paperless-ngx.svg
-icon_size: 48
+icon_size: 32
 status_entity: binary_sensor.paperless_status
 entities:
   - sensor.paperless_response_time
@@ -62,7 +62,7 @@ entities:
 | `url`             | string  |          | Opened when clicking the icon or name. Paths starting with `/` navigate inside Home Assistant.  |
 | `open_in_new_tab` | boolean | `true`   | Open external URLs in a new browser tab.                                                        |
 | `icon`            | string  |          | Image URL (e.g. from [selfh.st/icons](https://selfh.st/icons/)) or an `mdi:` icon.              |
-| `icon_size`       | number  | `48`     | Icon size in pixels. The icon is shown as a square.                                             |
+| `icon_size`       | number  | `32`     | Icon size in pixels. The icon is shown as a square.                                             |
 | `status_entity`   | entity  |          | Entity for the service state, shown as the first row with an Up / Down pill.                    |
 | `status_label`    | string  | `Status` | Label of the status row.                                                                        |
 | `entities`        | list    | `[]`     | Additional entities, one per line. Each item is an entity ID or `{ entity, name }`, where `name` overrides the displayed name. |
