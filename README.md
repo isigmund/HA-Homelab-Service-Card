@@ -14,6 +14,8 @@ any number of extra entities such as response time.
 - Icon and name link to your service (opens in a new tab by default).
 - Status entity shown as a green **Up** or red **Down** pill.
 - Any number of additional entities, one per line, with name and value.
+  Each entity can have its own display name. Long names stay on one line and are shortened with "…".
+- Full width in sections dashboards by default (resizable in the layout editor).
 - Click a row to open the entity's more-info dialog.
 - Fully configurable in the visual editor, no YAML needed.
 - Works with icons from [selfh.st/icons](https://selfh.st/icons/), any image URL, or `mdi:` icons.
@@ -63,7 +65,7 @@ entities:
 | `icon_size`       | number  | `48`     | Icon size in pixels. The icon is shown as a square.                                             |
 | `status_entity`   | entity  |          | Entity for the service state, shown as the first row with an Up / Down pill.                    |
 | `status_label`    | string  | `Status` | Label of the status row.                                                                        |
-| `entities`        | list    | `[]`     | Additional entities, one per line. Each item is an entity ID or `{ entity, name }`.             |
+| `entities`        | list    | `[]`     | Additional entities, one per line. Each item is an entity ID or `{ entity, name }`, where `name` overrides the displayed name. |
 
 ### Up / Down states
 

@@ -81,7 +81,7 @@ const STYLES = `
   }
   .rows {
     display: grid;
-    grid-template-columns: 1fr minmax(80px, auto);
+    grid-template-columns: minmax(0, 1fr) minmax(80px, auto);
     column-gap: 24px;
     row-gap: 6px;
     align-items: center;
@@ -93,11 +93,17 @@ const STYLES = `
     align-items: center;
     cursor: pointer;
   }
-  .label, .value { font-size: 0.95em; }
+  .label, .value { font-size: 12px; }
   .label {
     justify-self: end;
     text-align: right;
     color: var(--primary-text-color);
+    /* Long names stay on one line and are truncated with an ellipsis. */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    max-width: 100%;
   }
   .value {
     justify-self: end;
@@ -188,7 +194,8 @@ class HomelabServiceCard extends HTMLElement {
   }
 
   getGridOptions() {
-    return { columns: 6, min_columns: 3 };
+    // Full section width (12 of 12 columns) by default: twice a regular card.
+    return { columns: 12, min_columns: 6 };
   }
 
   _watchedEntities() {
@@ -256,7 +263,7 @@ class HomelabServiceCard extends HTMLElement {
 
   _renderRow(entityId, label, value) {
     return `<div class="row" data-entity="${escapeHtml(entityId)}" role="button" tabindex="0">
-      <div class="label">${label}</div>
+      <div class="label" title="${label}">${label}</div>
       <div class="value">${value}</div>
     </div>`;
   }
@@ -326,8 +333,21 @@ const EDITOR_SCHEMA = [
   },
   { name: "status_entity", selector: { entity: {} } },
   { name: "status_label", selector: { text: {} } },
-  { name: "entities", selector: { entity: { multiple: true } } },
 ];
+
+// One row per additional entity: entity picker + optional display name.
+const ENTITY_ROW_SCHEMA = [
+  {
+    type: "grid",
+    name: "",
+    schema: [
+      { name: "entity", selector: { entity: {} } },
+      { name: "name", selector: { text: {} } },
+    ],
+  },
+];
+
+const ADD_ENTITY_SCHEMA = [{ name: "entity", selector: { entity: {} } }];
 
 const EDITOR_LABELS = {
   name: "Service name",
@@ -337,7 +357,6 @@ const EDITOR_LABELS = {
   icon_size: "Icon size",
   status_entity: "Status entity (Up / Down)",
   status_label: "Status label",
-  entities: "Additional entities",
 };
 
 const EDITOR_HELPERS = {
@@ -345,10 +364,36 @@ const EDITOR_HELPERS = {
   icon: "For example https://cdn.jsdelivr.net/gh/selfhst/icons/svg/paperless-ngx.svg (see selfh.st/icons)",
   icon_size: "The icon is shown as a square of this size.",
   status_entity: "Shown as a green Up or red Down pill. States like on, up, online count as Up.",
-  entities: "Each entity is shown on its own line with its name and value.",
 };
 
+const ENTITY_ROW_LABELS = { entity: "Entity", name: "Display name (optional)" };
+
+// Material Design Icons paths (mdi:arrow-up, mdi:arrow-down, mdi:delete).
+const MDI_ARROW_UP = "M13,20H11V8L5.5,13.5L4.08,12.08L12,4.16L19.92,12.08L18.5,13.5L13,8V20Z";
+const MDI_ARROW_DOWN = "M11,4H13V16L18.5,10.5L19.92,11.92L12,19.84L4.08,11.92L5.5,10.5L11,16V4Z";
+const MDI_DELETE =
+  "M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z";
+
+const EDITOR_STYLES = `
+  .hsc-entities-title { font-weight: 500; margin: 24px 0 4px; }
+  .hsc-entities-help {
+    color: var(--secondary-text-color);
+    font-size: 0.875em;
+    margin-bottom: 8px;
+  }
+  .hsc-entity-row { display: flex; align-items: center; gap: 4px; margin-bottom: 8px; }
+  .hsc-entity-row ha-form { flex: 1; min-width: 0; }
+  .hsc-entity-row ha-icon-button { color: var(--secondary-text-color); flex: none; }
+`;
+
+const toEntityEntry = ({ entity, name }) => (name ? { entity, name } : entity);
+
 class HomelabServiceCardEditor extends HTMLElement {
+  constructor() {
+    super();
+    this._rows = [];
+  }
+
   setConfig(config) {
     this._config = { ...config };
     this._render();
@@ -357,6 +402,8 @@ class HomelabServiceCardEditor extends HTMLElement {
   set hass(hass) {
     this._hass = hass;
     if (this._form) this._form.hass = hass;
+    if (this._addForm) this._addForm.hass = hass;
+    for (const row of this._rows) row.form.hass = hass;
   }
 
   connectedCallback() {
@@ -377,33 +424,125 @@ class HomelabServiceCardEditor extends HTMLElement {
 
   _render() {
     if (!this._config || !customElements.get("ha-form")) return;
-    if (!this._form) {
-      this._form = document.createElement("ha-form");
-      this._form.schema = EDITOR_SCHEMA;
-      this._form.computeLabel = (s) => EDITOR_LABELS[s.name] ?? s.name;
-      this._form.computeHelper = (s) => EDITOR_HELPERS[s.name];
-      this._form.addEventListener("value-changed", (ev) => this._valueChanged(ev));
-      this.appendChild(this._form);
-    }
+    if (!this._form) this._build();
+
+    const { entities, ...rest } = this._config;
     this._form.hass = this._hass;
-    this._form.data = {
-      ...DEFAULTS,
-      ...this._config,
-      entities: normalizeEntities(this._config.entities).map((e) => e.entity),
-    };
+    this._form.data = { ...DEFAULTS, ...rest };
+    this._renderEntityRows();
   }
 
-  _valueChanged(ev) {
-    ev.stopPropagation();
-    const value = ev.detail.value;
-    // Keep per-entity options (e.g. a name set in YAML) for entities still in the list.
-    const existing = new Map(normalizeEntities(this._config.entities).map((e) => [e.entity, e]));
-    const entities = (value.entities ?? []).map((id) => {
-      const prev = existing.get(id);
-      return prev && Object.keys(prev).length > 1 ? prev : id;
+  _build() {
+    const style = document.createElement("style");
+    style.textContent = EDITOR_STYLES;
+
+    this._form = document.createElement("ha-form");
+    this._form.schema = EDITOR_SCHEMA;
+    this._form.computeLabel = (s) => EDITOR_LABELS[s.name] ?? s.name;
+    this._form.computeHelper = (s) => EDITOR_HELPERS[s.name];
+    this._form.addEventListener("value-changed", (ev) => this._mainChanged(ev));
+
+    const title = document.createElement("div");
+    title.className = "hsc-entities-title";
+    title.textContent = "Additional entities";
+    const help = document.createElement("div");
+    help.className = "hsc-entities-help";
+    help.textContent =
+      "Each entity is shown on its own line. Leave the display name empty to use the entity name.";
+
+    this._list = document.createElement("div");
+
+    this._addForm = document.createElement("ha-form");
+    this._addForm.schema = ADD_ENTITY_SCHEMA;
+    this._addForm.data = {};
+    this._addForm.computeLabel = () => "Add entity";
+    this._addForm.addEventListener("value-changed", (ev) => {
+      ev.stopPropagation();
+      const id = ev.detail.value?.entity;
+      if (!id) return;
+      this._setEntities([...this._entities(), id]);
+      this._addForm.data = {};
     });
 
-    const config = { ...this._config, ...value, entities };
+    this.append(style, this._form, title, help, this._list, this._addForm);
+  }
+
+  _entities() {
+    return normalizeEntities(this._config.entities).map(toEntityEntry);
+  }
+
+  _renderEntityRows() {
+    const entities = normalizeEntities(this._config.entities);
+    if (this._rows.length !== entities.length) {
+      this._list.replaceChildren();
+      this._rows = entities.map((_, index) => this._createRow(index));
+    }
+    this._addForm.hass = this._hass;
+    this._rows.forEach((row, i) => {
+      row.form.hass = this._hass;
+      row.form.data = { entity: entities[i].entity, name: entities[i].name ?? "" };
+      row.up.disabled = i === 0;
+      row.down.disabled = i === entities.length - 1;
+    });
+  }
+
+  _createRow(index) {
+    const el = document.createElement("div");
+    el.className = "hsc-entity-row";
+
+    const form = document.createElement("ha-form");
+    form.schema = ENTITY_ROW_SCHEMA;
+    form.computeLabel = (s) => ENTITY_ROW_LABELS[s.name] ?? s.name;
+    form.addEventListener("value-changed", (ev) => {
+      ev.stopPropagation();
+      const list = this._entities();
+      const value = ev.detail.value ?? {};
+      if (value.entity) list[index] = toEntityEntry(value);
+      else list.splice(index, 1); // Clearing the entity picker removes the row.
+      this._setEntities(list);
+    });
+
+    const button = (path, label, onClick) => {
+      const b = document.createElement("ha-icon-button");
+      b.path = path;
+      b.label = label;
+      b.addEventListener("click", onClick);
+      return b;
+    };
+    const move = (delta) => {
+      const list = this._entities();
+      const target = index + delta;
+      if (target < 0 || target >= list.length) return;
+      [list[index], list[target]] = [list[target], list[index]];
+      this._setEntities(list);
+    };
+    const up = button(MDI_ARROW_UP, "Move up", () => move(-1));
+    const down = button(MDI_ARROW_DOWN, "Move down", () => move(1));
+    const remove = button(MDI_DELETE, "Remove", () => {
+      const list = this._entities();
+      list.splice(index, 1);
+      this._setEntities(list);
+    });
+
+    el.append(form, up, down, remove);
+    this._list.appendChild(el);
+    return { form, up, down };
+  }
+
+  _setEntities(entities) {
+    this._config = { ...this._config, entities };
+    this._fireChanged();
+    this._renderEntityRows();
+  }
+
+  _mainChanged(ev) {
+    ev.stopPropagation();
+    this._config = { ...this._config, ...ev.detail.value };
+    this._fireChanged();
+  }
+
+  _fireChanged() {
+    const config = { ...this._config };
     for (const key of Object.keys(config)) {
       if (config[key] === "" || config[key] === undefined) delete config[key];
     }

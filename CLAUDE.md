@@ -29,8 +29,12 @@ the owner's homelab: icon, name, an Up/Down status pill, and extra entity rows
   entity data through `escapeHtml`, and URLs through `safeUrl`**.
 - Two elements: `homelab-service-card` and `homelab-service-card-editor`. The editor wraps Home
   Assistant's built-in `ha-form` with selectors.
-- `entities` items may be strings or `{ entity, name }`. The editor uses a multi-entity selector
-  (strings) and keeps existing object entries so YAML-only names aren't lost.
+- `entities` items may be strings or `{ entity, name }` (`name` = optional display name). The editor
+  has its own entity list: one `ha-form` per row (entity picker + display name) with move up/down
+  and remove buttons (`ha-icon-button`), plus an "Add entity" picker. Rows are only rebuilt when the
+  count changes, so typing a name doesn't lose focus.
+- Layout owner preferences: rows use 12px text; entity labels never wrap (ellipsis + tooltip);
+  the card defaults to full section width (`getGridOptions` → 12 columns).
 
 ## HACS constraints
 

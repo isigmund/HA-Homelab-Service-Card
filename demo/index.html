@@ -18,7 +18,7 @@
       --success-color: #2e7d32;
       --error-color: #c62828;
       display: grid;
-      grid-template-columns: repeat(auto-fill, 480px);
+      grid-template-columns: 640px 420px;
       gap: 16px;
     }
   </style>
@@ -43,6 +43,9 @@
           state: "140", attributes: { friendly_name: "Response Time", unit_of_measurement: "ms" },
         },
         "sensor.paperless_documents": { state: "1832", attributes: { friendly_name: "Documents" } },
+        "sensor.paperless_long": {
+          state: "12", attributes: { friendly_name: "Paperless Ngx documents waiting in the consumption folder for processing" },
+        },
         "sensor.jellyfin_status": { state: "down", attributes: { friendly_name: "Jellyfin" } },
         "sensor.jellyfin_response_time": {
           state: "unavailable", attributes: { friendly_name: "Response Time", unit_of_measurement: "ms" },
@@ -57,7 +60,11 @@
         icon: "https://cdn.jsdelivr.net/gh/selfhst/icons/svg/paperless-ngx.svg",
         icon_size: 48,
         status_entity: "binary_sensor.paperless_status",
-        entities: ["sensor.paperless_response_time", { entity: "sensor.paperless_documents", name: "Docs" }],
+        entities: [
+          "sensor.paperless_response_time",
+          { entity: "sensor.paperless_documents", name: "Docs" },
+          "sensor.paperless_long",
+        ],
       },
       {
         name: "Jellyfin",
@@ -65,7 +72,7 @@
         icon: "https://cdn.jsdelivr.net/gh/selfhst/icons/svg/jellyfin.svg",
         icon_size: 40,
         status_entity: "sensor.jellyfin_status",
-        entities: ["sensor.jellyfin_response_time", "sensor.missing_entity"],
+        entities: ["sensor.jellyfin_response_time"],
       },
     ];
 
