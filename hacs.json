@@ -1,0 +1,6 @@
+{
+  "name": "Homelab Service Card",
+  "filename": "homelab-service-card.js",
+  "render_readme": true,
+  "homeassistant": "2024.1.0"
+}
