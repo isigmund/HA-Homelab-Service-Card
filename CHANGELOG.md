@@ -31,6 +31,6 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Full section width by default in sections dashboards.
 - Fully configurable in the visual editor.
 
-[Unreleased]: https://github.com/isigmund/HA-Homelab-Service-Card/compare/v0.1.1...HEAD
-[0.1.1]: https://github.com/isigmund/HA-Homelab-Service-Card/compare/v0.1.0...v0.1.1
-[0.1.0]: https://github.com/isigmund/HA-Homelab-Service-Card/releases/tag/v0.1.0
+[Unreleased]: https://github.com/isigmund/ha-homelab-service-card/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/isigmund/ha-homelab-service-card/compare/v0.1.0...v0.1.1
+[0.1.0]: https://github.com/isigmund/ha-homelab-service-card/releases/tag/v0.1.0
