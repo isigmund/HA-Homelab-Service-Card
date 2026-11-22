@@ -98,9 +98,13 @@ The card is a single dependency-free JavaScript file,
 
 ### Releasing
 
+Changes are listed in [CHANGELOG.md](CHANGELOG.md) and in the GitHub release notes.
+
 1. Bump `CARD_VERSION` in `dist/homelab-service-card.js`.
-2. Commit, then create a GitHub release with a tag like `v0.1.0`.
-3. The release workflow attaches `homelab-service-card.js` to the release, and HACS picks it up.
+2. Move the `[Unreleased]` entries in `CHANGELOG.md` to a new version section.
+3. Commit, then create a GitHub release with a tag like `v0.1.2`, using that changelog section
+   as release notes.
+4. The release workflow attaches `homelab-service-card.js` to the release, and HACS picks it up.
 
 ## License
 

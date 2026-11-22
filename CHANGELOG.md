@@ -1,0 +1,36 @@
+# Changelog
+
+All notable changes to this project are documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [0.1.1] - 2026-11-22
+
+### Changed
+
+- Default icon size is now 32px (was 48px). Cards edited in the visual editor may have
+  `icon_size: 48` saved in their config; change the size in the editor or remove that line
+  to use the new default.
+- More compact layout: less space between entity rows (2px) and around the separator.
+
+## [0.1.0] - 2026-11-22
+
+### Added
+
+- First release.
+- Service icon (image URL, e.g. from [selfh.st/icons](https://selfh.st/icons/), or `mdi:` icon)
+  with configurable square size.
+- Service name; icon and name link to the service URL (new tab by default, paths starting
+  with `/` stay inside Home Assistant).
+- Status entity shown as a green **Up** or red **Down** pill.
+- Any number of additional entities, one per line, with optional display names.
+- Long entity names stay on one line (ellipsis, full name on hover).
+- Full section width by default in sections dashboards.
+- Fully configurable in the visual editor.
+
+[Unreleased]: https://github.com/isigmund/HA-Homelab-Service-Card/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/isigmund/HA-Homelab-Service-Card/compare/v0.1.0...v0.1.1
+[0.1.0]: https://github.com/isigmund/HA-Homelab-Service-Card/releases/tag/v0.1.0

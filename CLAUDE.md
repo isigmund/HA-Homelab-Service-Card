@@ -43,7 +43,28 @@ the owner's homelab: icon, name, an Up/Down status pill, and extra entity rows
 - The card file stays in `dist/`. The release workflow attaches it to every GitHub release.
 - Keep `README.md`, `LICENSE` and `.github/workflows/validate.yml` (HACS action) in place.
   HACS default submission also needs a public repo with description, topics and at least one release.
-- On release: bump `CARD_VERSION` in the JS file and tag `vX.Y.Z`.
+
+## Release checklist
+
+Versioning follows SemVer: `0.1.x` fixes / small tweaks, `0.x.0` new features, breaking config
+changes bump minor before 1.0 (major after 1.0). Releases are made directly from `main`.
+
+1. While working, add every user-visible change to `## [Unreleased]` in `CHANGELOG.md`
+   (Keep a Changelog sections: Added / Changed / Deprecated / Removed / Fixed).
+2. Pick the version, then:
+   - bump `CARD_VERSION` in `dist/homelab-service-card.js`
+   - in `CHANGELOG.md`, rename `[Unreleased]` to `[X.Y.Z] - YYYY-MM-DD`, add a fresh empty
+     `[Unreleased]` section, and update the compare links at the bottom
+   - re-render `images/preview.png` if the look changed
+3. Commit (`... (vX.Y.Z)`), push, then
+   `gh release create vX.Y.Z --target main --title vX.Y.Z --notes "..."`.
+   Release notes = that version's CHANGELOG section. HACS shows them in its update dialog.
+4. Breaking changes (changed defaults, renamed/removed options) go first in the notes under
+   **⚠ Breaking change**, with what the user has to change (YAML before/after).
+5. Check that the Release workflow attached `homelab-service-card.js` and Validate passed.
+
+`gh` lives at `C:\Program Files\GitHub CLI\gh.exe` (may not be on PATH in older shells).
+Pushing or publishing needs the owner's explicit go-ahead.
 
 ## Testing
 
