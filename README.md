@@ -1,6 +1,6 @@
 # Homelab Service Card
 
-[![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz/docs/faq/custom_repositories)
+[![HACS Default](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://hacs.xyz/)
 [![Validate](../../actions/workflows/validate.yml/badge.svg)](../../actions/workflows/validate.yml)
 
 A Home Assistant dashboard card that shows a service running in your homelab:
@@ -24,11 +24,18 @@ any number of extra entities such as response time.
 
 ### HACS (recommended)
 
+Homelab Service Card is available in the default HACS store. You don't need to add a custom repository.
+
+[![Open your Home Assistant instance and open this repository in HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=isigmund&repository=ha-homelab-service-card&category=plugin)
+
+Use the button above, or:
+
 1. Open **HACS** in Home Assistant.
-2. Open the menu (⋮) → **Custom repositories**.
-3. Add this repository's URL with type **Dashboard**.
-4. Search for **Homelab Service Card** and click **Download**.
-5. Reload your browser.
+2. Search for **Homelab Service Card**.
+3. Open it and click **Download**.
+4. Reload your browser.
+
+HACS adds the dashboard resource for you and shows an update notice when a new release is out.
 
 ### Manual
 
