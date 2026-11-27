@@ -33,6 +33,12 @@ the owner's homelab: icon, name, an Up/Down status pill, and extra entity rows
   has its own entity list: one `ha-form` per row (entity picker + display name) with move up/down
   and remove buttons (`ha-icon-button`), plus an "Add entity" picker. Rows are only rebuilt when the
   count changes, so typing a name doesn't lose focus.
+- `links` items may be URL strings or `{ name, url }` (secondary navigation targets). The card shows
+  them in a ☰ menu in the header, using the Popover API (top layer, not clipped by the card) with an
+  absolutely positioned fallback for browsers without it. The editor's list sections (entities, links)
+  share one implementation driven by `LIST_SECTIONS`.
+- `setConfig` re-renders the whole card; `hass` updates only re-render the `.rows` container, so an
+  open menu survives entity state changes.
 - Layout owner preferences: rows use 12px text; entity labels never wrap (ellipsis + tooltip);
   the card defaults to full section width (`getGridOptions` → 12 columns).
 
