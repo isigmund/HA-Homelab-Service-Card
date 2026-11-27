@@ -7,8 +7,15 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+### Added
+
+- Secondary links (`links` option): any number of extra navigation targets, each with a name
+  and URL, shown in a ☰ menu at the top right of the card. Configurable in the visual editor
+  under "Secondary links". ([#1](https://github.com/isigmund/ha-homelab-service-card/issues/1))
+
 ### Changed
 
+- Entity state updates now only redraw the entity rows instead of the whole card.
 - The README now describes installing from the default HACS store (with a "My Home Assistant"
   button) instead of adding a custom repository.
 
