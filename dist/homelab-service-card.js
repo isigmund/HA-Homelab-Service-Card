@@ -6,7 +6,7 @@
  * No build step required: this file is loaded directly by Home Assistant.
  */
 
-const CARD_VERSION = "0.2.0-beta.1";
+const CARD_VERSION = "0.2.0";
 const CARD_TYPE = "homelab-service-card";
 const EDITOR_TYPE = "homelab-service-card-editor";
 
