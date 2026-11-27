@@ -7,6 +7,11 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+### Changed
+
+- The README now describes installing from the default HACS store (with a "My Home Assistant"
+  button) instead of adding a custom repository.
+
 ## [0.1.1] - 2026-11-22
 
 ### Changed
